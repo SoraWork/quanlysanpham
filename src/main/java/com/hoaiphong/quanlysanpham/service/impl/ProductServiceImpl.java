@@ -31,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,6 +50,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CreateResponse<ProductCreateResponse> createProduct(ProductCreateRequest request, List<MultipartFile> images) {
         if(productRepository.existsByProductCode(request.getProductCode())){
             throw new SomeThingWrongException(Translator.toLocale("product_code.exists"));
@@ -84,6 +84,7 @@ public class ProductServiceImpl implements ProductService {
         return new CreateResponse<>(200, Translator.toLocale("product.create.success"), data);
     }
 
+
     public Page<ProductSearchResponse> searchProducts(
             String name,
             String productCode,
@@ -94,6 +95,7 @@ public class ProductServiceImpl implements ProductService {
     ) {
         name = escapeLike(name);
         productCode = escapeLike(productCode);
+
         //  Lấy page sản phẩm (repository đã lọc categoryId nếu truyền)
         Page<Product> productsPage = productRepository.searchProducts(
                 name, productCode, createdFrom, createdTo, categoryId, pageable
@@ -150,7 +152,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ProductUpdateResponse updateProduct(Long id, ProductRequest request, List<MultipartFile> images) {
         // 1. Lấy product + fetch ảnh + category
         Product product = productRepository.findByIdWithActiveStatus(id)
@@ -420,15 +422,6 @@ public class ProductServiceImpl implements ProductService {
         // 5) Cập nhật lại product.productCategories trong persistence context (nếu cần)
         Set<ProductCategory> refreshed = productCategoryRepository.findByProduct(product);
         product.setProductCategories(refreshed);
-    }
-
-    private Date parseDate(String dateStr) {
-        try {
-            if (dateStr == null || dateStr.isBlank()) return null;
-            return new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
-        } catch (Exception e) {
-            return null;
-        }
     }
 
 

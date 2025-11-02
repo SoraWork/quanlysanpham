@@ -57,6 +57,7 @@ public interface CategoryMapper {
     Category toEntity(CategoryRequest request);
 
     // Entity → Response
+    @Mapping(target = "images", ignore = true)
     CategorySearchResponse toSearchResponse(Category entity);
 
     CategoryUpdateResponse toUpdateResponse(Category entity);

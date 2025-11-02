@@ -44,6 +44,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final ImageRepository imageRepository;
     private final ImageMapper imageMapper;
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public CreateResponse<CategoryCreateResponse> createCategory(CategoryCreateRequest request, List<MultipartFile> images) {
         if (categoryRepository.existsByCategoryCode(request.getCategoryCode())) {
             throw new SomeThingWrongException(Translator.toLocale("category_code.exists"));
@@ -111,7 +113,7 @@ public class CategoryServiceImpl implements CategoryService {
         return new PageResponse<>(dtoList, pagination);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CategoryUpdateResponse updateCategory(Long id, CategoryRequest request, List<MultipartFile> images) {
         // 1. Lấy category + fetch ảnh
         Category category = categoryRepository.findByIdWithActiveStatus(id)

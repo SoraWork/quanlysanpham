@@ -56,7 +56,7 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Pageable pageable = PageRequest.of(page, size);
 
         //  Parse chuỗi ngày sang Date (nếu có)
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

@@ -26,11 +26,12 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
                 AND c.id IN :ids
     """)
         List<Category> findAllById(@Param("ids")List<Long> ids);
+
     @Query("""
         SELECT c FROM Category c
         WHERE c.status = '1'
               AND (:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\')
-               AND (:categoryCode IS NULL OR LOWER(c.categoryCode) LIKE LOWER(CONCAT('%', :categoryCode, '%')) ESCAPE '\\')
+              AND (:categoryCode IS NULL OR LOWER(c.categoryCode) LIKE LOWER(CONCAT('%', :categoryCode, '%')) ESCAPE '\\')
               AND (:createdFrom IS NULL OR c.createdDate >= :createdFrom)
               AND (:createdTo IS NULL OR c.createdDate <= :createdTo)
         """

@@ -1,6 +1,7 @@
 package com.hoaiphong.quanlysanpham.service.impl;
 
 import com.hoaiphong.quanlysanpham.configuration.Translator;
+import com.hoaiphong.quanlysanpham.exception.SomeThingWrongException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,9 +29,7 @@ public class FileStorageServiceImpl {
 
             return "/uploads/" + fileName;
         } catch (IOException e) {
-            throw new RuntimeException(
-                    Translator.toLocale("file.store.failed", file.getOriginalFilename()), e
-            );
+            throw new SomeThingWrongException("file lưu thất bại");
         }
     }
 }
