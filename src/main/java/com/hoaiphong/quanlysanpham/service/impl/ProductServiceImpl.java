@@ -55,11 +55,28 @@ public class ProductServiceImpl implements ProductService {
         if(productRepository.existsByProductCode(request.getProductCode())){
             throw new SomeThingWrongException(Translator.toLocale("product_code.exists"));
         }
+        // Kiểm tra category IDs hợp lệ
+        List<Long> categoryIds = request.getCategoryIds();
+        List<Category> categories = categoryRepository.findAllById(categoryIds);
+
+        if (categories.size() != categoryIds.size()) {
+            // Tìm ra những categoryId nào không tồn tại
+            Set<Long> foundIds = categories.stream()
+                    .map(Category::getId)
+                    .collect(Collectors.toSet());
+            List<Long> notFoundIds = categoryIds.stream()
+                    .filter(id -> !foundIds.contains(id))
+                    .toList();
+
+            throw new SomeThingWrongException(
+                    Translator.toLocale("category.not_found") + ": " + notFoundIds
+            );
+        }
+
         Product product = productMapper.toEntity(request, images, fileStorageServiceImpl);
 
         productRepository.save(product);
 
-        List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
 
         Set<ProductCategory> productCategories = new HashSet<>();
 

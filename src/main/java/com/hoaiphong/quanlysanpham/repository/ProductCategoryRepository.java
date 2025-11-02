@@ -25,10 +25,11 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
 
     // Lấy tất cả ProductCategory theo danh sách productIds (dùng để gom tên category)
     @Query("""
-        SELECT pc FROM ProductCategory pc
-        WHERE pc.product.id IN :productIds
-        AND pc.status = '1'
-    """)
+    SELECT pc FROM ProductCategory pc
+    LEFT JOIN FETCH pc.category
+    WHERE pc.product.id IN :productIds
+    AND pc.status = '1'
+""")
     List<ProductCategory> findByProductIdIn(@Param("productIds") List<Long> productIds);
 
 
