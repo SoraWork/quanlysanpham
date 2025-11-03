@@ -92,7 +92,9 @@ public class ProductController {
         PageResponse<ProductSearchResponse> response = new PageResponse<>();
         response.setData(result.getContent());
         response.setPagination(pagination);
+        System.out.println("1");
         return response;
+
     }
 
 
